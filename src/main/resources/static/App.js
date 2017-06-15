@@ -20,6 +20,7 @@ class MembersCrud extends React.Component {
         this.createMember = this.createMember.bind(this);
     }
 
+    //TODO edit and view a member
     navigateToForm(member) {
         this.setState({show: 'form', members: this.state.members});
     }
@@ -51,6 +52,7 @@ class MembersCrud extends React.Component {
                 members.push(data);
                 this.setState({show: 'list', members: members});
             })
+            //TODO improve error handling
             .catch( err => console.error(err))
     }
 
