@@ -1,2 +1,2 @@
-# adviqo
-Members Service - A Spring Boot + React simple CRUD
+# Member Service CRUD
+Simple Spring Boot + React CRUD app
