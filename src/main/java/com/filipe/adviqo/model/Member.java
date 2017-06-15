@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Getter
 @Entity
+@XmlRootElement
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"firstName", "lastName", "birthDate"})
 public class Member {
