@@ -123,8 +123,10 @@ class MemberItem extends React.Component {
                 <td>{member.birthdate}</td>
                 <td>{member.postalCode}</td>
                 <td>
-                    <button className="btn btn-danger" onClick={this.handleDelete}>Delete</button>
-                    <button className="btn btn-info" onClick={this.handleEdit}>Edit</button>
+                    <div className="btn-group">
+                        <button className="btn btn-info" onClick={this.handleEdit}>Edit</button>
+                        <button className="btn btn-danger" onClick={this.handleDelete}>Delete</button>
+                    </div>
                 </td>
             </tr>
         );
