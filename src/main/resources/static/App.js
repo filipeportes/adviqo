@@ -20,9 +20,8 @@ class MembersCrud extends React.Component {
         this.createMember = this.createMember.bind(this);
     }
 
-    //TODO edit and view a member
     navigateToForm(member) {
-        this.setState({show: 'form', members: this.state.members});
+        this.setState({show: 'form', members: this.state.members, member: member});
     }
 
     navigateToList() {
@@ -42,6 +41,7 @@ class MembersCrud extends React.Component {
             .catch(err => console.error(err));
     }
 
+    //TODO edit a member
     createMember(member) {
         fetch('/api/members', { method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -69,7 +69,7 @@ class MembersCrud extends React.Component {
         } else {
             let rows = this.state.members.map(member => {
                 member.key = member._links.self.href;
-                return (<MemberItem key={member.key} member={member} handleDelete={this.handleDelete} />);
+                return (<MemberItem key={member.key} member={member} handleDelete={this.handleDelete} navigateToForm={this.navigateToForm} />);
             });
             return (
                 <div>
@@ -100,11 +100,17 @@ class MemberItem extends React.Component {
     constructor(props) {
         super(props);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
     }
 
     handleDelete(event) {
         event.preventDefault();
         this.props.handleDelete(this.props.member);
+    }
+
+    handleEdit(event) {
+        event.preventDefault();
+        this.props.navigateToForm(this.props.member);
     }
 
     render() {
@@ -118,6 +124,7 @@ class MemberItem extends React.Component {
                 <td>{member.postalCode}</td>
                 <td>
                     <button className="btn btn-danger" onClick={this.handleDelete}>Delete</button>
+                    <button className="btn btn-info" onClick={this.handleEdit}>Edit</button>
                 </td>
             </tr>
         );
@@ -127,7 +134,11 @@ class MemberItem extends React.Component {
 class MemberForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {firstName: '', lastName: '', birthdate: '', postalCode: ''};
+        if(this.props.member && this.props.member.key) {
+            this.state = this.props.member;
+        } else {
+            this.state = {firstName: '', lastName: '', birthdate: '', postalCode: ''};
+        }
         this.handleSave = this.handleSave.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -160,17 +171,21 @@ class MemberForm extends React.Component {
                 <div className="panel-heading">Member</div>
                 <div className="panel-body">
                     <div className="form-group">
-                        <input type="text" placeholder="First Name" className="form-control" name="firstName" onChange={this.handleChange}/>
+                        <input type="text" placeholder="First Name" className="form-control" name="firstName"
+                               value={this.state.firstName} onChange={this.handleChange}/>
                     </div>
                     <div className="form-group">
-                        <input type="text" placeholder="Last Name" className="form-control" name="lastName" onChange={this.handleChange}/>
+                        <input type="text" placeholder="Last Name" className="form-control" name="lastName"
+                               value={this.state.lastName} onChange={this.handleChange}/>
                     </div>
                     <div className="row form-group">
                         <div className="col-md-6">
-                            <input type="text" placeholder="Date of Birth" className="form-control" name="birthdate" onChange={this.handleChange}/>
+                            <input type="text" placeholder="Date of Birth" className="form-control" name="birthdate"
+                                   value={this.state.birthdate} onChange={this.handleChange}/>
                         </div>
                         <div className="col-md-6">
-                            <input type="text" placeholder="Postal Code" className="form-control" name="postalCode" onChange={this.handleChange}/>
+                            <input type="text" placeholder="Postal Code" className="form-control" name="postalCode"
+                                   value={this.state.postalCode} onChange={this.handleChange}/>
                         </div>
                     </div>
                     <div className="btn-group">
