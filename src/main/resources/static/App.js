@@ -17,7 +17,7 @@ class MembersCrud extends React.Component {
         this.navigateToList = this.navigateToList.bind(this);
         this.handleNew = this.handleNew.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.createMember = this.createMember.bind(this);
+        this.saveMember = this.saveMember.bind(this);
     }
 
     navigateToForm(member) {
@@ -41,19 +41,34 @@ class MembersCrud extends React.Component {
             .catch(err => console.error(err));
     }
 
-    //TODO edit a member
-    createMember(member) {
-        fetch('/api/members', { method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(member)})
-            .then(res => res.json())
-            .then(data => {
-                let members = this.state.members;
-                members.push(data);
-                this.setState({show: 'list', members: members});
+    saveMember(member) {
+        if(member.key) {
+            fetch(member.key, { method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(member)})
+                .then(res => res.json())
+                .then(data => {
+                    let members = this.state.members.filter(m => m.key != member.key);
+                    members.push(data);
+                    this.setState({show: 'list', members: members});
+                })
+                //TODO improve error handling
+                .catch( err => console.error(err))
+        } else {
+            fetch('/api/members', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(member)
             })
-            //TODO improve error handling
-            .catch( err => console.error(err))
+                .then(res => res.json())
+                .then(data => {
+                    let members = this.state.members;
+                    members.push(data);
+                    this.setState({show: 'list', members: members});
+                })
+                //TODO improve error handling
+                .catch(err => console.error(err))
+        }
     }
 
     componentDidMount() {
@@ -65,7 +80,7 @@ class MembersCrud extends React.Component {
 
     render() {
         if (this.state.show === 'form') {
-            return (<MemberForm member={this.state.member} navigateToList={this.navigateToList} createMember={this.createMember} />);
+            return (<MemberForm member={this.state.member} navigateToList={this.navigateToList} saveMember={this.saveMember} />);
         } else {
             let rows = this.state.members.map(member => {
                 member.key = member._links.self.href;
@@ -149,7 +164,7 @@ class MemberForm extends React.Component {
     handleSave(event) {
         event.preventDefault();
         let member = this.state;
-        this.props.createMember(member);
+        this.props.saveMember(member);
     }
 
     handleCancel(event) {
